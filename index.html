@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Quiz</title>
+  <style>
+    /* Add your CSS styles here */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    iframe {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="quiz-container">
+    <!-- Questions and answers will be dynamically inserted here -->
+  </div>
+  <button id="submit-btn">Submit</button>
+  <div id="result-container"></div>
+
+  <script>
+    const quizData = {
+      "quiz": [
+        {
+          "questionId": 1,
+          "question": "Which shot type is this?",
+          "answers": [
+            {
+              "option": "Slap",
+              "isCorrect": false
+            },
+            {
+              "option": "Wrist",
+              "isCorrect": false
+            },
+            {
+              "option": "Snap",
+              "isCorrect": false
+            },
+            {
+              "option": "Backhand",
+              "isCorrect": false
+            },
+            {
+              "option": "Forehand-backhand",
+              "isCorrect": false
+            },
+            {
+              "option": "Backhand-forehand",
+              "isCorrect": false
+            },
+            {
+              "option": "Deflected",
+              "isCorrect": true
+            }
+          ],
+          "vimeoUrl": "https://vimeo.com/your_first_video_url"
+        },
+        // Add more questions with corresponding data
+      ]
+    };
+
+    const quizContainer = document.getElementById("quiz-container");
+    const submitButton = document.getElementById("submit-btn");
+    const resultContainer = document.getElementById("result-container");
+
+    function buildQuiz() {
+      quizData.quiz.forEach((questionData) => {
+        const questionElement = document.createElement("div");
+        questionElement.innerHTML = `
+          <p>${questionData.question}</p>
+          <div id="answers-${questionData.questionId}"></div>
+          <br>
+          <iframe src="${questionData.vimeoUrl}" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        `;
+
+        const answerContainer = questionElement.querySelector(`#answers-${questionData.questionId}`);
+        questionData.answers.forEach((answer, index) => {
+          const inputElement = document.createElement("input");
+          inputElement.type = "radio";
+          inputElement.name = `question-${questionData.questionId}`;
+          inputElement.value = index + 1;
+
+          const labelElement = document.createElement("label");
+          labelElement.textContent = answer.option;
+
+          answerContainer.appendChild(inputElement);
+          answerContainer.appendChild(labelElement);
+          answerContainer.appendChild(document.createElement("br"));
+        });
+
+        quizContainer.appendChild(questionElement);
+      });
+    }
+
+    function calculateScore() {
+      let score = 0;
+      quizData.quiz.forEach((questionData) => {
+        const selectedOption = document.querySelector(`input[name="question-${questionData.questionId}"]:checked`);
+        if (selectedOption && quizData.quiz.find(q => q.questionId === questionData.questionId).answers[selectedOption.value - 1].isCorrect) {
+          score++;
+        }
+      });
+      return score;
+    }
+
+    function showResult() {
+      const score = calculateScore();
+      resultContainer.textContent = `Your score: ${score} out of ${quizData.quiz.length}`;
+    }
+
+    submitButton.addEventListener("click", showResult);
+
+    // Build the quiz when the page loads
+    window.onload = buildQuiz;
+  </script>
+</body>
+</html>
